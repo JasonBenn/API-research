@@ -29,6 +29,6 @@ module Emailer
       end
     end
 
-    puts 'no errors while sending'
+    puts 'No errors while sending!'
   end
 end

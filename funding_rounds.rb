@@ -10,12 +10,9 @@ module FundingRounds
     data = JSON.parse(fetch)
     orgs = data['results']['orgs']
     with_hq = orgs.select { |org| org['headquarters'] }
-    puts "With an HQ: #{with_hq.map {|org| org['name']['text']} }"
     in_city = with_hq.select { |org| CITIES.any? { |city| org['headquarters']['text'].include? city } }
-    puts "In cities: #{in_city.map {|org| org['name']['text']}}"
     new_rounds = in_city.reject { |org| @store.org_in_db?(org['name']['text'], org['latest-round'], org['total-funding']) }
-    puts "New rounds: #{new_rounds.map {|org| org['name']['text']}}"
-    new_rounds
+    { with_hq: with_hq, in_city: in_city, new_rounds: new_rounds }
   end
 
   private

@@ -1,9 +1,11 @@
 CITIES = ['San Mateo', 'Foster City', 'South San Francisco', 'Burlingame', 'Redwood City', 'Belmont', 'San Carlos']
 
 module Presenter
-  def self.rounds_to_html(rounds)
-    if rounds.any?
-      email = rounds.reduce({ subject: [], body: [] }) do |email, org|
+  def self.rounds_to_html(funding_rounds)
+    new_rounds = funding_rounds[:new_rounds]
+
+    if new_rounds.any?
+      email = new_rounds.reduce({ subject: [], body: [] }) do |email, org|
         name = org['name']['text']
         city = org['headquarters']['text']
         total_funding = org['total-funding']
@@ -18,7 +20,12 @@ module Presenter
       body = describe_cities + format_list(email[:body])
     else
       subject = "No new funding rounds today in your cities. EOM"
-      body = "Checked: " + CITIES.join(', ')
+      body = [
+        "All rounds with a disclosed location: #{funding_rounds[:with_hq].map {|org| org['name']['text']}.sort.join(', ') }",
+        "Cities you're watching: " + CITIES.join(', '),
+        "Recent rounds in your cities: #{funding_rounds[:in_city].map {|org| org['name']['text']}.sort.join(', ')}"
+      ].join("\n\n")
+
     end
     [subject, body]
   end
